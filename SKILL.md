@@ -1,3 +1,18 @@
+---
+name: podlens-interpreter
+displayName: PodLens Interpreter
+description: 把播客、论文、长文转成证据锚定的内容包，适合一人公司和独立创作者
+categories: [writing, research]
+roles: [creator, researcher]
+outputs: [social-media-post, newsletter, document]
+scenarios: [content-creation, research]
+runtimes: [chat]
+platforms: [claude-code, openclaw, hermes]
+tags: [podcast, content-creation, evidence-grounded, hackathon]
+version: 1.0.0
+author: Helia
+---
+
 # PodLens Interpreter — Evidence-Grounded Content Pack Skill
 
 ## Identity
