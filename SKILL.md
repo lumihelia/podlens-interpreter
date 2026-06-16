@@ -1,7 +1,7 @@
 ---
 name: podlens-interpreter
 displayName: PodLens Interpreter
-description: 把播客、论文、长文转成证据锚定的内容包，适合一人公司和独立创作者
+description: Turn podcasts, papers, and long reads into publishable content packs — every claim anchored to a timestamp or verbatim quote
 categories: [writing, research]
 roles: [creator, researcher]
 outputs: [social-media-post, newsletter, document]
