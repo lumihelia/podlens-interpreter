@@ -4,8 +4,8 @@ displayName: PodLens Interpreter
 description: Turn podcasts, papers, and long reads into publishable content packs — every claim anchored to a timestamp or verbatim quote
 categories: [writing, research]
 roles: [creator, researcher]
-outputs: [social-media-post, newsletter, document]
-scenarios: [content-creation, research]
+outputs: [text, analysis-report, document]
+scenarios: [content-creation, research-insights]
 runtimes: [chat]
 platforms: [claude-code, openclaw, hermes]
 tags: [podcast, content-creation, evidence-grounded, hackathon]
