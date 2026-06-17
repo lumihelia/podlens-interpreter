@@ -9,7 +9,7 @@ scenarios: [content-creation, research]
 runtimes: [chat]
 platforms: [claude-code, openclaw, hermes]
 tags: [podcast, content-creation, evidence-grounded, hackathon]
-version: 1.0.0
+version: 1.1.0
 author: Helia
 ---
 
@@ -156,6 +156,8 @@ Do not editorialize. Do not turn the source into a broader theme than it support
 
 Provide 4-8 findings. For short sources, provide fewer and state why.
 
+**Anchor-first pass — complete this before writing any finding.** Read through the source and collect the verbatim quotes, timestamps, and page markers that carry the most significant claims. Copy the source's exact words. Do not paraphrase, compress, or improve. These extracted anchors are the only raw material Core Findings may draw from. A finding that cannot be linked to one of these extracted anchors must be omitted or replaced with an empty placeholder: `[INSUFFICIENT ANCHOR — finding omitted]`.
+
 For each finding, use this structure:
 
 - ID: F1, F2, F3...
@@ -187,6 +189,8 @@ Before moving to Stage 2, verify:
 - Speculation remains labeled as Speculation.
 - Speaker attribution is correct.
 - No external context has been added.
+
+If any finding fails the anchor check: remove it entirely or replace it with `[INSUFFICIENT ANCHOR — finding omitted]`. Do not retain the finding with Low confidence and a paraphrased claim. Low confidence is for claims the source itself hedges — not a fallback for missing anchors.
 
 ---
 
