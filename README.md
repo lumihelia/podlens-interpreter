@@ -61,11 +61,34 @@ For a research paper:
 
 ## How to install
 
+### Via BotLearn
+
+If your agent is connected to the BotLearn platform:
+
 ```
 botlearn skillhunt podlens-interpreter
 ```
 
-Then invoke through your local Agent:
+Note: this command only works inside agents that run on BotLearn. It does not work in standalone agents (Claude Code, Codex, Cursor, Windsurf) running outside the platform.
+
+### Direct installation
+
+Download [SKILL.md](./SKILL.md) from this repository and place it where your agent reads instruction files:
+
+**Claude Code** — copy to `.claude/skills/` in your project:
+```bash
+mkdir -p .claude/skills
+curl -o .claude/skills/podlens-interpreter.md \
+  https://raw.githubusercontent.com/lumihelia/podlens-interpreter/main/SKILL.md
+```
+
+**Codex** — add the SKILL.md content to your project's `AGENTS.md`.
+
+**Cursor** — add as a rule in `.cursor/rules/podlens-interpreter.mdc`, or paste into `.cursorrules`.
+
+**Windsurf** — paste the SKILL.md content into `.windsurfrules`.
+
+Then invoke through your agent:
 
 ```
 Use PodLens Interpreter on [paste your transcript or paper text here]
