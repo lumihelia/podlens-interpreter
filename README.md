@@ -1,146 +1,187 @@
 # PodLens Interpreter
 
-**Turn long podcasts, interviews, papers, and transcripts into evidence-grounded content packs — for solo founders who think before they publish.**
+中文 · [English](./README.en.md)
 
----
+一个以证据为起点的 Agent Skill，用于把播客、访谈、论文和其他长内容整理成可追溯的观点还原、可读的白话解释，以及可以继续编辑和发布的内容包。
 
-## Who it is for
+PodLens Interpreter 来自 PodLens 的方法体系，目前作为独立 Skill 分发。运行发生在支持 Skill 的 Agent 内，这个仓库本身不包含独立 Web 应用、本地服务或模型 API 配置。
 
-Solo founders, independent researchers, creators, and knowledge workers who:
+**当前 Skill 版本：** `1.1.0`
 
-- Listen to or read long-form content and want to extract real signal, not just highlights
-- Need to repurpose insights into newsletters, posts, or research without losing fidelity to the source
-- Are tired of AI summaries that paraphrase instead of reconstruct
-- Want a publishable content pack they can actually stand behind
+## 它如何工作
 
-## What it does
+整个流程按三个阶段向前推进：
 
-Three stages, always in this order:
+1. **Faithful Reconstruction / 忠实还原**：从原文中找出核心问题、关键发现、整体立场与不确定性，并给每条发现留下证据锚点。
+2. **Plain-Language Retelling / 白话重述**：沿着 Stage 1 已经建立的证据结构，把原内容讲清楚。
+3. **Content Pack / 内容包**：从经过核验的还原结果继续生成可以编辑和发布的内容资产。
 
-**Stage 1 — Faithful Reconstruction**
-Rebuilds the source's actual argument with evidence anchors: timestamps or direct quote fragments. Every claim must trace back to a specific moment in the text. Speculation is labeled as speculation. Nothing is invented.
+Skill 最核心的是一条完整的证据链：
 
-**Stage 2 — Plain Language Retelling**
-Explains the content as if to a smart friend who has not read it — concrete analogies, actual argument structure, no bullet-point flattening. Minimum 300 words of flowing prose.
-
-**Stage 3 — Content Pack**
-Produces ready-to-use output: X thread, LinkedIn post, newsletter intro, and five follow-up content angles — all grounded in Stage 1 evidence. For research papers, switches to Research Brief + Evidence Table + Business Angles.
-
-## What input it needs
-
-- Plain text: paste a transcript, upload a `.txt` or `.md` file, or copy paper text
-- Subtitle files: `.srt` or `.vtt` content pasted as text
-- Any language — output matches the language you use to talk to the agent, not the source language
-- Minimum useful length: ~800 words
-- No API key required. No local setup required. No web UI.
-
-## What output it produces
-
-For a 60-minute podcast transcript (~8,000 words):
-- Core findings with timestamp anchors (minimum 4)
-- 300+ word plain-language retelling
-- 5–8 tweet X thread with source-verified claims
-- 150–200 word LinkedIn post
-- 100–150 word newsletter intro
-- 5 follow-up content angles
-
-For a research paper:
-- Core findings with direct quote anchors
-- 300+ word plain-language explanation
-- Research Brief (practical implications for solo founders)
-- Evidence Table (claim → direct quote → section)
-- Business and creator application angles
-
-## How much time it saves
-
-| Task | Manual | PodLens Interpreter |
-|------|--------|---------------------|
-| 60-min podcast → content pack | 90–120 min | ~4 min |
-| Research paper → research brief | 45–60 min | ~3 min |
-| Interview → X thread with sources | 30–45 min | ~2 min |
-
-## How to install
-
-### Via BotLearn
-
-If your agent is connected to the BotLearn platform:
-
-```
-botlearn skillhunt podlens-interpreter
+```text
+原始内容
+    -> 证据锚点
+    -> finding
+    -> 白话重述
+    -> 可发布内容
 ```
 
-Note: this command only works inside agents that run on BotLearn. It does not work in standalone agents (Claude Code, Codex, Cursor, Windsurf) running outside the platform.
+当前 v1.1.0 在 Stage 1 增加了 anchor-first 流程：先提取原文中的逐字引用、时间戳、页码或章节位置，再生成 finding。找不到足够锚点的 finding 会被舍弃，不会用较低置信度继续保留一个缺少证据的判断。
 
-### Direct installation
+每次完整运行最后都会出现一个简短的 `Audit`，用于检查证据追溯、人物归因、不确定性表达与文字约束。
 
-Download [SKILL.md](./SKILL.md) from this repository and place it where your agent reads instruction files:
+## 适合处理什么
 
-**Claude Code** — copy to `.claude/skills/` in your project:
-```bash
-mkdir -p .claude/skills
-curl -o .claude/skills/podlens-interpreter.md \
-  https://raw.githubusercontent.com/lumihelia/podlens-interpreter/main/SKILL.md
+适合的输入包括：
+
+- 播客与访谈 transcript
+- YouTube 字幕，以及粘贴进来的 `.srt` / `.vtt` 文本
+- 研究论文与学术文本
+- 技术报告
+- 长文章、essay、lecture 与 talk transcript
+
+完整三阶段流程更适合约 800 词以上的材料。按照当前 Skill 规则，更短的输入默认只执行 Stage 1。超过约 12,000 词的长材料会先沿章节、时间戳、说话人或其他自然边界分段，再合并 findings。
+
+输出语言跟随当前对话使用的语言；明确指定其他语言时，以指定语言为准。
+
+Skill 本身不要求单独配置 API key。实际使用的模型与工具由承载它的 Agent 环境提供。
+
+## 输出结构
+
+### Standard Mode
+
+用于播客、访谈、文章与 lecture：
+
+- Core Question
+- 带证据锚点的 Core Findings
+- Core Positions
+- 白话重述
+- X post / thread
+- LinkedIn post
+- Newsletter intro
+- 5 个 Follow-up Angles
+- Audit
+
+### Paper Mode
+
+用于论文与技术报告：
+
+- Core Question
+- 带证据锚点的 Core Findings
+- Core Positions
+- 白话重述
+- Research Brief
+- Evidence Table
+- Business and Creator Angles
+- Audit
+
+从原文进一步延伸出来的应用与选题会标记自己来自哪一条 Stage 1 finding，让后续推演和原作者真正说过的话保持清楚边界。
+
+## 安装
+
+`SKILL.md` 采用可移植的 Agent Skills 结构。不同 Agent 的发现路径有所不同。
+
+### BotLearn SkillHunt
+
+```text
+skillhunt podlens-interpreter
 ```
 
-**Codex** — add the SKILL.md content to your project's `AGENTS.md`.
+`skillhunt` 目前仍是 BotLearn `install` 命令的 alias。
 
-**Cursor** — add as a rule in `.cursor/rules/podlens-interpreter.mdc`, or paste into `.cursorrules`.
+### Claude Code
 
-**Windsurf** — paste the SKILL.md content into `.windsurfrules`.
+项目级：
 
-Then invoke through your agent:
-
-```
-Use PodLens Interpreter on [paste your transcript or paper text here]
+```text
+.claude/skills/podlens-interpreter/SKILL.md
 ```
 
-## Example input
+个人 / 全局：
 
-See `examples/demo_a_input.txt` — a 28-minute podcast transcript about attention and productivity (~280 words).
+```text
+~/.claude/skills/podlens-interpreter/SKILL.md
+```
 
-See `examples/demo_b_input.txt` — a research paper excerpt on cognitive overhead for one-person businesses (~700 words).
+### Codex
 
-## Example output
+Skill 作为独立目录放在 `$CODEX_HOME/skills` 下。默认位置是：
 
-See `examples/demo_a_output.md` — full podcast content pack including Stage 1, Stage 2, X thread, LinkedIn post, newsletter intro, and field note draft.
+```text
+~/.codex/skills/podlens-interpreter/SKILL.md
+```
 
-See `examples/demo_b_output.md` — full paper research brief including Stage 1, Stage 2, Research Brief, Evidence Table, Business Angles, and field note draft.
+早期 README 中「把整份 SKILL.md 内容加入 `AGENTS.md`」的方式已经不是当前首选安装路径。
 
-See `example-output-alphago.md` — a real Paper Mode run on the AlphaGo Nature paper (Silver et al., 2016), including full Stage 1 findings with direct quote anchors, Stage 2 plain-language retelling (800 words), Research Brief, Evidence Table, Business Angles, and a completed Audit section.
+### Cursor
 
-## Why it is different from generic summarizers
+项目级可以放在：
 
-| Generic AI summarizer | PodLens Interpreter |
-|-----------------------|---------------------|
-| Compresses and paraphrases | Reconstructs argument structure first |
-| May hallucinate details | Every claim requires a timestamp or quote anchor |
-| Loses source specificity | Speculation is labeled with the source's own hedging |
-| Output could apply to anything | Content pack flows from verified reconstruction |
-| No evidence trail | Stage 1 is independently verifiable against the source |
+```text
+.cursor/skills/podlens-interpreter/SKILL.md
+.agents/skills/podlens-interpreter/SKILL.md
+```
 
-## Scenario
+Cursor 目前也会发现 Claude 与 Codex skill 目录中的兼容 Skill。
 
-**Content Production Automation** · **Knowledge Management & Research** · **Personal Brand Growth**
+### Windsurf
 
-## Tags
+项目级：
 
-podcast to content · transcript analysis · evidence grounded summary · founder content · research synthesis · personal brand · OPC workflow · newsletter draft · social content · paper to brief · solo founder · one person company
+```text
+.windsurf/skills/podlens-interpreter/SKILL.md
+```
 
-## Demo Guidance
+跨 Agent 的项目级位置：
 
-One-sentence description: `Long source in. Evidence-linked content pack out.`
+```text
+.agents/skills/podlens-interpreter/SKILL.md
+```
 
-Suggested demo inputs:
+Windsurf 全局 Skill 默认位于：
 
-1. A podcast or interview transcript with timestamps
-2. A YouTube subtitle file in .srt or .vtt format
-3. A research paper or technical report
-4. A long article or lecture transcript
+```text
+~/.codeium/windsurf/skills/podlens-interpreter/SKILL.md
+```
 
-Suggested demo claim: `This skill turned a long source into anchored findings, a readable retelling, and publishable content assets in one repeatable run.`
+对于支持 Agent Skills 的环境，可复用单元都是一个名为 `podlens-interpreter/` 的 Skill 目录，其中包含本仓库的 `SKILL.md`。
 
-Recommended tags: content-production · research · knowledge-management · newsletter · x-thread · solo-founder · one-person-company · transcript · paper-reading · evidence-grounded
+## 调用
 
-## About
+Agent 成功发现 Skill 后，直接给出材料和任务即可，例如：
 
-PodLens Interpreter is built on the PodLens methodology: faithful reconstruction before content production. The principle is that what you publish should be traceable to what was actually said or written — not to what an AI predicted the content probably said.
+```text
+使用 PodLens Interpreter 处理这份 transcript，按照完整的三阶段结构输出。
+```
+
+支持显式 Skill 调用的 Agent 也可以通过自己的 slash command 或 Skill picker 启动。
+
+## 示例
+
+仓库目前保留三类示例：
+
+- `examples/demo_a_*`：早期的紧凑 podcast fixture
+- `examples/demo_b_*`：早期的紧凑 paper fixture
+- `example-output-alphago.md`：基于 2016 年 AlphaGo Nature 论文生成的一份更长 Paper Mode 示例
+
+两组 compact demo 来自早期 SkillHunt 提交阶段，输入长度都低于当前 v1.1 对完整三阶段流程的建议长度。它们适合观察早期输出形态，不作为当前 `SKILL.md` 的合规测试样本。
+
+`example-output-alphago.md` 同样标注为 v1 时期的运行结果。它仍然可以用于观察较完整的 Paper Mode 与证据锚定方式；当前执行规范以 `SKILL.md` v1.1.0 为准。
+
+## 和 PodLens 的关系
+
+[PodLens](https://github.com/lumihelia/PodLens) 是完整的 Python interpretation 与 publishing workspace，包含 CLI、本地 editorial workbench、私有 personal mapping，以及中英文静态站发布流程。
+
+PodLens Interpreter 从同一套方法体系中抽出一个可以独立安装的 Agent workflow：先还原来源，再保持证据可追溯，然后继续生成下游内容。运行 PodLens Interpreter 不依赖 PodLens 应用本身。
+
+## 仓库结构
+
+- `SKILL.md`：当前 Skill 指令与 metadata
+- `README.md`：中文仓库说明
+- `README.en.md`：英文仓库说明
+- `examples/`：早期紧凑 demo fixtures
+- `example-output-alphago.md`：较长的 Paper Mode 示例
+
+## License
+
+[MIT](LICENSE)
